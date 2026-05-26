@@ -139,16 +139,47 @@ To reproduce the specific results for **Gemma-2-2B** and **Llama-3.2-1B** on the
 
 ## Results Summary
 
-As demonstrated in the paper, PIE achieves significant efficiency gains:
+We evaluate PIE on **Llama-3.2-1B** and **Gemma-2-2B** across two tasks (**IOI**, **Doc-String**) and five budgets (K ∈ {50, 100, 200, 400, 800}). The summary below focuses on the strict-budget regime (K ≤ 200) where method choice most affects fidelity; extended results (K ∈ {400, 800}, full FADE metrics, sensitivity sweeps) are reported in the paper appendices.
 
-| Model | Method | Features Kept () | KL Divergence (nats) ↓ | Efficiency vs Random |
+### Behavioral fidelity on IOI (last-token KL ↓)
+
+Mean ± std across prompts. FAP-Synergy dominates at strict budgets; gradient-based methods converge as K grows.
+
+| Model | Method | K=50 | K=100 | K=200 |
 | --- | --- | --- | --- | --- |
-| **Gemma-2-2B** | Random (Active Set) | 4,250 | 0.69 | 1x |
-| **Gemma-2-2B** | **PIE (FAP-Synergy)** | **100** | **0.73** | **~40x** |
-| **Llama-3.2-1B** | Random (Active Set) | 3,750 | 1.15 | 1x |
-| **Llama-3.2-1B** | **PIE (FAP-Synergy)** | **100** | **1.12** | **~40x** |
+| **Llama-3.2-1B** | CLT-RelP | 1.32 ± 0.62 | 1.15 ± 0.54 | 0.87 ± 0.41 |
+| | FAP | 1.33 ± 0.60 | 1.13 ± 0.53 | **0.85 ± 0.42** |
+| | **FAP-Synergy** | **1.22 ± 0.56** | **1.12 ± 0.52** | **0.85 ± 0.42** |
+| | Activation-Magnitude | 1.59 ± 0.69 | 1.52 ± 0.65 | 1.32 ± 0.59 |
+| | FActP | 1.26 ± 0.63 | 1.24 ± 0.64 | 1.22 ± 0.63 |
+| **Gemma-2-2B** | CLT-RelP | 0.86 ± 0.43 | 0.75 ± 0.37 | 0.53 ± 0.28 |
+| | FAP | 0.91 ± 0.46 | 0.74 ± 0.37 | **0.52 ± 0.29** |
+| | **FAP-Synergy** | **0.82 ± 0.42** | **0.73 ± 0.36** | **0.52 ± 0.29** |
+| | Activation-Magnitude | 1.29 ± 0.59 | 1.25 ± 0.58 | 1.18 ± 0.56 |
+| | FActP | 0.81 ± 0.37 | 0.77 ± 0.38 | 0.76 ± 0.37 |
 
-*Random baselines require thousands of features to match the behavioral fidelity that PIE achieves with just 100 features.*
+### Effective Budget — ~33% downstream cost reduction
+
+On IOI, **FAP-Synergy at K=50 functionally matches base FAP and CLT-RelP at K=75** (Llama: 1.22 vs. 1.22 / 1.23; Gemma: 0.82 vs. 0.81 / 0.80). Because interpretation and evaluation costs scale linearly per retained feature, synergy effectively grants the pipeline 25 "free" feature occurrences and cuts downstream API spend by **~33%**.
+
+### Causal sparsity gap — ~40× compression vs. active-set random
+
+PIE at K=100 reaches a fidelity level that random sampling from the prompt-active feature set only achieves with **≈4,000 features** (Figure 2 in the paper). This ≈40× gap shows that the vast majority of *active* CLT features are causally irrelevant — strongly motivating the *prune-first, interpret-later* paradigm.
+
+### Interpretability quality (FADE metrics, K=50 Doc-String)
+
+FAP-Synergy yields the highest overall Clarity / Purity / Responsiveness in the strictest budget regime (mean ± std):
+
+| Model | Method | Clarity | Purity | Responsiveness |
+| --- | --- | --- | --- | --- |
+| Llama-3.2-1B | CLT-RelP | 0.710 ± 0.043 | 0.501 ± 0.052 | 0.586 ± 0.050 |
+| Llama-3.2-1B | FAP | 0.733 ± 0.042 | 0.540 ± 0.051 | 0.610 ± 0.048 |
+| Llama-3.2-1B | **FAP-Synergy** | **0.765 ± 0.039** | **0.581 ± 0.049** | **0.652 ± 0.049** |
+| Gemma-2-2B | CLT-RelP | 0.739 ± 0.040 | 0.631 ± 0.045 | 0.708 ± 0.041 |
+| Gemma-2-2B | FAP | 0.770 ± 0.035 | 0.644 ± 0.046 | 0.722 ± 0.042 |
+| Gemma-2-2B | **FAP-Synergy** | **0.774 ± 0.037** | **0.675 ± 0.044** | **0.735 ± 0.039** |
+
+As budgets relax (K ≥ 400), CLT-RelP, base FAP, and FAP-Synergy converge — for relaxed-sparsity workflows, base FAP or CLT-RelP is the computationally optimal choice.
 
 ## More Baselines
 
