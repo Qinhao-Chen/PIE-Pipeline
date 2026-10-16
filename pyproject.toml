@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pie-framework"
+version = "0.2.0"
+description = "PIE circuit discovery, feature interpretation and explanation evaluation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+dependencies = []
+
+[project.scripts]
+pie = "pie.cli:main"
+
+[project.optional-dependencies]
+gpu = [
+  "numpy==1.24.4",
+  "torch==2.6.0",
+  "transformers==4.51.0",
+  "transformer-lens==2.16.1",
+  "huggingface-hub==0.34.1",
+  "datasets==3.6.0",
+  "tqdm==4.67.1",
+  "safetensors==0.5.3",
+  "einops>=0.8.0,<1",
+  "pydantic>=2,<3",
+]
+api = ["httpx==0.28.1", "openai==1.91.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pie", "pie.*"]
+exclude = ["legacy", "legacy.*", "vendor", "vendor.*", "tests", "tests.*"]

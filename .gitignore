@@ -1,0 +1,54 @@
+# Python and local environments
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+build/
+dist/
+
+# New runs, caches and model weights
+data/
+private/
+outputs/
+results/
+exports/
+artifacts/
+.cache/
+*.csv
+*.csv.gz
+*.jsonl
+*.jsonl.gz
+*.npy
+*.npz
+*_pairs.json
+descriptions*.json
+evaluation*.json
+per_prompt*.json
+summary.json
+run_manifest.json
+*.pt
+*.pth
+*.safetensors
+*.bin
+
+# Local credentials and editor settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.claude/
+.codex/
+.agents/
+.vscode/
+.idea/
+.DS_Store
+
+# Scheduler and process logs
+slurm-*.out
+*.log
+*.pid

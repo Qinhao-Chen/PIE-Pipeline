@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "circuit-tracer"
+version = "0.1.0+pie"
+description = "Frozen circuit-tracer runtime used by PIE; includes local helper additions"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+dependencies = ["einops>=0.8.0", "huggingface-hub>=0.26.0", "numpy>=1.24.0", "pydantic>=2.0.0", "safetensors>=0.5.0", "tokenizers>=0.21.0", "torch>=2.0.0", "tqdm>=4.60.0", "transformer-lens>=2.16.0", "transformers>=4.50.0"]
+
+[tool.setuptools.packages.find]
+include = ["circuit_tracer*"]
+
+[tool.setuptools.package-data]
+circuit_tracer = ["frontend/assets/**/*", "frontend/assets/*"]
